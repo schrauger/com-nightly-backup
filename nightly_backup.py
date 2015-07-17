@@ -27,7 +27,7 @@ def main():
 
 def run_backup(site):
 	current_time = get_date_time()
-	backup_root = "/var/backups"
+	backup_root = "/var/backups/nightly"
 	web_root = "/var/www"
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
