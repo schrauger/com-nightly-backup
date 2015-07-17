@@ -23,6 +23,7 @@ def main():
 	sites = config.sites
 	for site in sites:
 		run_backup(sites[site])
+	send_email()
 	return 0
 
 def run_backup(site):
@@ -56,5 +57,8 @@ def get_date_time():
     date = datetime.datetime.today()
     return date.strftime("%Y-%m-%d_%s")
 
+# send log email saying backups were completed
+def send_email():
+	return 0
 
 main() # run the script
