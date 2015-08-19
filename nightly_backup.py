@@ -47,10 +47,16 @@ def run_backup(site):
 	# make sure there is no space between -p and the double quote
 	os.system('mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
 
-def prune(site):
+	### Delete old backups
+	if (site['backup_days']:
+		prune(nightly_root, site['backup_days']
+	else:
+		prune(nightly_root, 90)
+	
+def prune(site_nightly_root, days):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
 	### mtime is number of days from today since the files were modified.
-	os.system('find "$nightly_root" -mindepth 1 -maxdepth 1 -type d -mtime +90 | xargs rm -rf')
+	os.system('find "' + nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
 	# pipe into xargs because it is more efficient than using the find -exec command to rm
 
 def get_date_time():
