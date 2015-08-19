@@ -22,6 +22,7 @@ else:
 def main():
 	sites = config.sites
 	for site in sites:
+		print(" do nothing")
 		run_backup(sites[site])
 	send_email()
 	return 0
@@ -65,6 +66,30 @@ def get_date_time():
 
 # send log email saying backups were completed
 def send_email():
-	return 0
+	SENDMAIL = config.sendmail
+	FROM = config.email_from
+	TO = config.email_to
+
+	SUBJECT = "Nightly Backup - " + config.server
+	TEXT = "The nightly backup for " + get_date_time() + " on " + config.server + " completed."
+
+	message = """\
+From: %s
+To: %s
+Subject: %s
+
+%s
+	""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
+	print(message)
+	p = os.popen("%s -t -i" %SENDMAIL, "w")
+	p.write(message)
+	status = p.close()
+	if status:
+		print "Sendmail exit status", status
+
+#	server = smtplib.SMTP(SERVER)
+#	server.sendmail(FROM, TO, message)
+#	server.quit()
+	#return 0
 
 main() # run the script
