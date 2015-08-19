@@ -48,7 +48,7 @@ def run_backup(site):
 	os.system('mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
 
 	### Delete old backups
-	if (site['backup_days']:
+	if (site['backup_days']):
 		prune(nightly_root, site['backup_days']
 	else:
 		prune(nightly_root, 90)
