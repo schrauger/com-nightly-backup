@@ -1,3 +1,8 @@
+sendmail = '/usr/sbin/sendmail'
+email_from = 'backups@SERVER.med.ucf.edu'
+email_to = ['recipient@email.com']
+server = 'SERVER.med.ucf.edu'
+
 sites = {}
 
 sites['site_med_prd'] = {
