@@ -81,16 +81,10 @@ Subject: %s
 
 %s
 	""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
-	#print(message)
 	p = os.popen("%s -t -i" %SENDMAIL, "w")
 	p.write(message)
 	status = p.close()
 	if status:
 		print "Sendmail exit status", status
-
-#	server = smtplib.SMTP(SERVER)
-#	server.sendmail(FROM, TO, message)
-#	server.quit()
-	#return 0
 
 main() # run the script
