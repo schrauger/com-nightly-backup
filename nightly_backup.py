@@ -22,7 +22,6 @@ else:
 def main():
 	sites = config.sites
 	for site in sites:
-		print(" do nothing")
 		run_backup(sites[site])
 	send_email()
 	return 0
