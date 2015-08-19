@@ -49,7 +49,7 @@ def run_backup(site):
 
 	### Delete old backups
 	if (site['backup_days']):
-		prune(nightly_root, site['backup_days']
+		prune(nightly_root, site['backup_days'])
 	else:
 		prune(nightly_root, 90)
 	
