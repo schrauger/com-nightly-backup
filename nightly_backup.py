@@ -70,7 +70,9 @@ def send_email():
 	TO = config.email_to
 
 	SUBJECT = "Nightly Backup - " + config.server
-	TEXT = "The nightly backup for " + get_date_time() + " on " + config.server + " completed."
+	TEXT = "The nightly backup for " + get_date_time() + " on " + config.server + """ completed. \n\n\
+Date: """ + get_date_time() + """\n\
+Server: """ + config.server
 
 	message = """\
 From: %s
@@ -79,7 +81,7 @@ Subject: %s
 
 %s
 	""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
-	print(message)
+	#print(message)
 	p = os.popen("%s -t -i" %SENDMAIL, "w")
 	p.write(message)
 	status = p.close()
