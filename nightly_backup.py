@@ -45,7 +45,7 @@ def run_backup(site):
 	os.system('cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
 	### Backup COM Production database
 	# make sure there is no space between -p and the double quote
-	os.system('mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '"')
+	os.system('mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
 
 def prune(site):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
