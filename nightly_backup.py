@@ -33,7 +33,6 @@ def run_backup(site):
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
 
-	print nightly_dir
 	os.system('mkdir -p "' + nightly_dir + '"')
 	os.system('mkdir -p "' + nightly_dir + '/web"')
 	os.system('mkdir -p "' + nightly_dir + '/db"')
@@ -41,8 +40,16 @@ def run_backup(site):
 	### Chmod. Only root can read or write.
 	os.system('chmod -R 0700 "' + nightly_dir + '"')
 
-	### Copy COM Production (entire WP directory. more reliable recovery, especially if WP is updated)
-	os.system('cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
+	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
+	###   This will save tons on filespace for files that are unchanged, but changed, added, removed files
+	###   are backed up. And if an old backup gets deleted, the hardlinked duplicates aren't deleted.
+	# Get most recent directory path: find DIR -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -zk 1nr | head -1 | awk '{ print $2 }'
+	previous_nightly_dir = os.popen('find "' + nightly_root + '/" -mindepth 1 -maxdepth 1 -type d -not -path "' + nightly_dir + '" -printf "%T@ %p\n" | sort -zk 1nr | head -1 | awk \'{ print $2 }\'').read().strip()
+	if (previous_nightly_dir):
+		os.system('rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
+	else:
+		os.system('cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
+	
 	### Backup COM Production database
 	# make sure there is no space between -p and the double quote
 	os.system('mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
