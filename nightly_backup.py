@@ -36,7 +36,7 @@ def run_backup(site):
 	os.system('mkdir -p "' + nightly_dir + '"')
 	os.system('mkdir -p "' + nightly_dir + '/web"')
 	os.system('mkdir -p "' + nightly_dir + '/db"')
-	os.system('ln -sf "' + nightly_dir + '" "' + nightly_root + '"')
+	os.system('ln -sf "' + nightly_dir + '" "' + nightly_root + '/latest"')
 
 	### Chmod. Only root can read or write.
 	os.system('chmod -R 0700 "' + nightly_dir + '"')
