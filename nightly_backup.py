@@ -41,7 +41,11 @@ def run_backup(site):
 	### Chmod. Only root can read or write. However, the execute bit is set to others can traverse the path if they know the location.
 	### This is used by the user_read_access user with ACL read access for all backups.
 	os.system('chmod -R 0711 "' + nightly_dir + '"')
-	if (config.user_read_access)
+	try:
+		config.user_read_access
+	except NameError:
+		print "No user configured for read access. Continuing with backup."
+	else:
 		os.system('setfacl -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set permission for folder
 		os.system('setfacl -d -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set default for new files and subfolders
 
