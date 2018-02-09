@@ -46,8 +46,8 @@ def run_backup(site):
 	except NameError:
 		print "No user configured for read access. Continuing with backup."
 	else:
-		os.system('setfacl -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set permission for folder
-		os.system('setfacl -d -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set default for new files and subfolders
+		os.system('setfacl -R -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set permission for folder
+		os.system('setfacl -R -d -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set default for new files and subfolders
 
 	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
 	###   This will save tons on filespace for files that are unchanged, but changed, added, removed files
