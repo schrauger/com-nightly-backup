@@ -7,6 +7,7 @@ user_read_access = 'sshuserwithreadaccess'
 sites = {}
 
 #sites['site_med_prd'] = {
+#	'linux_user': "root",			# user that can read the source and write to the destination
 #	'backup_root': "/var/backups/nightly",	# backup destination root directory
 #	'web_root': "/var/www",			# web root that contains the 'directory'
 						# (this portion of the path is not recreated)
@@ -20,6 +21,7 @@ sites = {}
 						# entire set of files changes completely
 #}
 sites['site_med_prd'] = {
+	'linux_user': "root",
 	'backup_root': "/var/backups/nightly",
 	'web_root': "/var/www",
 	'directory': "med.ucf.edu/production",
@@ -29,6 +31,7 @@ sites['site_med_prd'] = {
 	'backup_days': "90"
 }
 sites['site_med_dev'] = {
+	'linux_user': "root",
 	'backup_root': "/var/backups/nightly",
 	'web_root': "/var/www",
 	'directory': "med.ucf.edu/dev",
