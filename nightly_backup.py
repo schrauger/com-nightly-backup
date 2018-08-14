@@ -35,21 +35,21 @@ def run_backup(site):
 	web_root = site['web_root']
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
-	os.system('sudo -u ' + site['user'] + ' ' + 'mkdir -p "' + nightly_dir + '"')
-	os.system('sudo -u ' + site['user'] + ' ' + 'mkdir -p "' + nightly_dir + '/web"')
-	os.system('sudo -u ' + site['user'] + ' ' + 'mkdir -p "' + nightly_dir + '/db"')
-	os.system('sudo -u ' + site['user'] + ' ' + 'ln -sfn "' + nightly_dir + '" "' + nightly_root + '/latest"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/web"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/db"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir + '" "' + nightly_root + '/latest"')
 
 	### Chmod. Only root can read or write. However, the execute bit is set to others can traverse the path if they know the location.
 	### This is used by the user_read_access user with ACL read access for all backups.
-	os.system('sudo -u ' + site['user'] + ' ' + 'chmod -R 0711 "' + nightly_dir + '"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'chmod -R 0711 "' + nightly_dir + '"')
 	try:
 		config.user_read_access
 	except NameError:
 		print "No user configured for read access. Continuing with backup."
 	else:
-		os.system('sudo -u ' + site['user'] + ' ' + 'setfacl -R -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set permission for folder
-		os.system('sudo -u ' + site['user'] + ' ' + 'setfacl -R -d -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set default for new files and subfolders
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set permission for folder
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -d -m user:' + config.user_read_access + ':rX ' + nightly_dir) # set default for new files and subfolders
 
 	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
 	###   This will save tons on filespace for files that are unchanged, but changed, added, removed files
@@ -57,13 +57,13 @@ def run_backup(site):
 	# Get most recent directory path: find DIR -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -zk 1nr | head -1 | awk '{ print $2 }'
 	previous_nightly_dir = os.popen('find "' + nightly_root + '/" -mindepth 1 -maxdepth 1 -type d -not -path "' + nightly_dir + '" -printf "%T@ %p\n" | sort -nr | head -1 | awk \'{ print $2 }\'').read().strip()
 	if (previous_nightly_dir):
-		os.system('sudo -u ' + site['user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
 	else:
-		os.system('sudo -u ' + site['user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
 	
 	### Backup COM Production database
 	# make sure there is no space between -p and the double quote
-	os.system('sudo -u ' + site['user'] + ' ' + 'mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
 
 	### Delete old backups
 	if (site['backup_days']):
@@ -74,7 +74,7 @@ def run_backup(site):
 def prune(site_nightly_root, days):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
 	### mtime is number of days from today since the files were modified.
-	os.system('sudo -u ' + site['user'] + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
 	# pipe into xargs because it is more efficient than using the find -exec command to rm
 
 def get_date_time():
