@@ -15,10 +15,11 @@ sites = {}
 #	'user': "DB_USER",			# database username that has SELECT privileges
 #	'password': "DB_PASSWORD",		# database password
 #	'db': "DB",				# database schema name
-#	'backup_days': "90"			# number of individual days to keep before pruning.
+#	'backup_days': "90",			# number of individual days to keep before pruning.
 						# Script uses hardlinks, so 10 backups do not take
 						# up 10x the space of a single backup, unless the
 						# entire set of files changes completely
+#	'user_read_access': "sshuserwithreadaccess"	# this ssh user is must be able to read all the backup files. remove parameter if not needed.
 #}
 sites['site_med_prd'] = {
 	'linux_user': "root",
@@ -28,7 +29,8 @@ sites['site_med_prd'] = {
 	'user': "DB_USER",
 	'password': "DB_PASSWORD",
 	'db': "DB",
-	'backup_days': "90"
+	'backup_days': "90",
+	'user_read_access': "sshuserwithreadaccess"
 }
 sites['site_med_dev'] = {
 	'linux_user': "root",
@@ -38,5 +40,6 @@ sites['site_med_dev'] = {
 	'user': "DB_DEV_USER",
 	'password': "DB_DEV_PASSWORD",
 	'db': "DB_DEV",
-	'backup_days': "5"
+	'backup_days': "5",
+	'user_read_access': "sshuserwithreadaccess"
 }
