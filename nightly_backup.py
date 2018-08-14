@@ -35,7 +35,6 @@ def run_backup(site):
 	web_root = site['web_root']
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '"')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/web"')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/db"')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir + '" "' + nightly_root + '/latest"')
