@@ -28,8 +28,10 @@ def main():
 
 def run_backup(site):
 	current_time = get_date_time()
-	backup_root = "/var/backups/nightly"
-	web_root = "/var/www"
+	#backup_root = "/var/backups/nightly"
+	backup_root = site['backup_root']
+	#web_root = "/var/www"
+	web_root = site['web_root']
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
 

@@ -7,6 +7,8 @@ user_read_access = 'sshuserwithreadaccess'
 sites = {}
 
 sites['site_med_prd'] = {
+	'backup_root': "/var/backups/nightly",
+	'web_root': "/var/www",
 	'directory': "med.ucf.edu/production",
 	'user': "DB_USER",
 	'password': "DB_PASSWORD",
@@ -14,6 +16,8 @@ sites['site_med_prd'] = {
 	'backup_days': "90"
 }
 sites['site_med_dev'] = {
+	'backup_root': "/var/backups/nightly",
+	'web_root': "/var/www",
 	'directory': "med.ucf.edu/dev",
 	'user': "DB_DEV_USER",
 	'password': "DB_DEV_PASSWORD",
