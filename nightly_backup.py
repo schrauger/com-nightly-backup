@@ -69,10 +69,10 @@ def run_backup(site):
 	else:
 		prune(nightly_root, 90)
 	
-def prune(site_nightly_root, days):
+def prune(site_nightly_root, days, linux_user = "root"):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
 	### mtime is number of days from today since the files were modified.
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
+	os.system('sudo -u ' + linux_user + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
 	# pipe into xargs because it is more efficient than using the find -exec command to rm
 
 def get_date_time():
