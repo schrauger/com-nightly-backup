@@ -46,7 +46,7 @@ def run_backup(site):
 		site['user_read_access']
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -m user:' + site['user_read_access'] + ':rX ' + nightly_dir) # set permission for folder
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -d -m user:' + site['user_read_access'] + ':rX ' + nightly_dir) # set default for new files and subfolders
-	except NameError:
+	except KeyError:
 		print "No user configured for read access. Continuing with backup."
 
 	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
