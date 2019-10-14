@@ -61,7 +61,7 @@ def run_backup(site):
 	
 	### Backup COM Production database
 	# make sure there is no space between -p and the double quote
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + ' -p"' + site['password'] + '" ' + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
 
 	### Delete old backups
 	if (site['backup_days']):
