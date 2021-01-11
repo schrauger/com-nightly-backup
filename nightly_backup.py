@@ -62,7 +62,7 @@ def run_backup(site):
 	### Move protected files into their own folder. Mainly because the COMIT script crashes if it tries to read these files (it can't skip files that it sees but lacks permission to read)
 	for protected_file in site['protected_files']:
 		# if the file actually exists, move it outside the web folder
-		if path.isfile(nightly_dir + '/web/' + protected_file):
+		if os.path.isfile(nightly_dir + '/web/' + protected_file):
 			# get the relative path of the file based on the string
 			protected_path = os.path.dirname(protected_file)
 			protected_filename = os.path.basename(protected_file)
