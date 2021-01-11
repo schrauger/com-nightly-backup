@@ -58,7 +58,18 @@ def run_backup(site):
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
 	else:
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
-	
+
+	### Move protected files into their own folder. Mainly because the COMIT script crashes if it tries to read these files (it can't skip files that it sees but lacks permission to read)
+	for protected_file in site['protected_files']:
+		# get the relative path of the file based on the string
+		protected_path = os.path.dirname(protected_file)
+		protected_path_full_origin = nightly_dir + '/web/' + protected_path
+		protected_path_full_destination = nightly_dir + '/protected/' + protected_path
+		print(protected_path_full_origin + protected_file)
+		print(protected_path_full_destination + protected_file)
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + protected_path_full + '"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'mv "' + protected_path_origin + protected_file + '" "' + protected_path_destination + protected_file + '"')
+
 	### Backup COM Production database
 	# make sure there is no space between -p and the double quote
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
@@ -68,7 +79,7 @@ def run_backup(site):
 		prune(nightly_root, site['backup_days'])
 	else:
 		prune(nightly_root, 90)
-	
+
 def prune(site_nightly_root, days, linux_user = "root"):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
 	### mtime is number of days from today since the files were modified.
