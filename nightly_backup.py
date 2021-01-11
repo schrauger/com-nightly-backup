@@ -67,7 +67,7 @@ def run_backup(site):
 		protected_path_full_destination = nightly_dir + '/protected/' + protected_path
 		print(protected_path_full_origin + protected_file)
 		print(protected_path_full_destination + protected_file)
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + protected_path_full + '"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + protected_path_full_destination + '"')
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'mv -f "' + protected_path_origin + protected_file + '" "' + protected_path_destination + protected_file + '"')
 
 	### Backup COM Production database
