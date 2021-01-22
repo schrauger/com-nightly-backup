@@ -35,8 +35,8 @@ def run_backup(site):
 	web_root = site['web_root']
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/web"')
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/db"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/unprotected/web"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/unprotected/db"')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir + '" "' + nightly_root + '/latest"')
 
 	### Chmod. Only root can read or write. However, the execute bit is set to others can traverse the path if they know the location.
@@ -55,18 +55,18 @@ def run_backup(site):
 	# Get most recent directory path: find DIR -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -zk 1nr | head -1 | awk '{ print $2 }'
 	previous_nightly_dir = os.popen('sudo -u ' + site['linux_user'] + ' ' + 'find "' + nightly_root + '/" -mindepth 1 -maxdepth 1 -type d -not -path "' + nightly_dir + '" -printf "%T@ %p\n" | sort -nr | head -1 | awk \'{ print $2 }\'').read().strip()
 	if (previous_nightly_dir):
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/unprotected/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/unprotected/web/"')
 	else:
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/unprotected/web/"')
 
 	### Move protected files into their own folder. Mainly because the COMIT script crashes if it tries to read these files (it can't skip files that it sees but lacks permission to read)
 	for protected_file in site['protected_files']:
 		# if the file actually exists, move it outside the web folder
-		if os.path.isfile(nightly_dir + '/web/' + protected_file):
+		if os.path.isfile(nightly_dir + '/unprotected/web/' + protected_file):
 			# get the relative path of the file based on the string
 			protected_path = os.path.dirname(protected_file)
 			protected_filename = os.path.basename(protected_file)
-			protected_path_full_origin = nightly_dir + '/web/' + protected_path + '/'
+			protected_path_full_origin = nightly_dir + '/unprotected/web/' + protected_path + '/'
 			protected_path_full_destination = nightly_dir + '/protected/' + protected_path + '/'
 			#print(protected_path_full_origin + protected_file)
 			#print(protected_path_full_destination + protected_file)
@@ -75,7 +75,7 @@ def run_backup(site):
 
 	### Backup COM Production database
 	# make sure there is no space between -p and the double quote
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + nightly_dir + '/unprotected/db/' + site['db'] + '.sql"')
 
 	### Delete old backups
 	if (site['backup_days']):
