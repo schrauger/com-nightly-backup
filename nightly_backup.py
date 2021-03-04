@@ -93,7 +93,7 @@ def run_backup(site):
 			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mv -f "' + protected_path_full_origin + protected_filename + '" "' + protected_path_full_destination + protected_filename + '"')
 
 	### Overwrite any files in the specialized backup folder using the specialized source directory
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a " + web_root + '/' + site['directory_specialized'] + '/" "' + nightly_dir_specialized + '/web/"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a "' + web_root + '/' + site['directory_specialized'] + '/" "' + nightly_dir_specialized + '/web/"')
 
 	### Backup Production database
 	# make sure there is no space between -p and the double quote
