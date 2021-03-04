@@ -74,9 +74,9 @@ def run_backup(site):
 	else:
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
 
-	# Copy with hardlinks the regular backup files to the specialized backup folder, excluding wp-config.php
-	print('copying again for tertiary')
+	# Copy with hardlinks the regular backup files to the specialized backup folder
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir_specialized + '/web/"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'chmod -R u+r "' + nightly_dir_specialized + '"')
 
 	### @TODO this is no longer needed or helpful. just chown all the files that give us trouble, and overwrite the wp-config.php file
 	### Move protected files into their own folder. Mainly because the COMIT script crashes if it tries to read these files (it can't skip files that it sees but lacks permission to read)
