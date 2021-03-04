@@ -12,6 +12,7 @@ sites = {}
 #	'web_root': "/var/www",			# web root that contains the 'directory'
 						# (this portion of the path is not recreated)
 #	'directory': "med.ucf.edu/production",	# the directory to be backed up
+#	'directory_specialized': "med.ucf.edu/tertiary-production", # files that are used in place of the main files, when used on the tertiary server (generally, alternative wp-config.php files)
 #	'user': "DB_USER",			# database username that has SELECT privileges
 #	'password': "DB_PASSWORD",		# database password
 #	'db': "DB",				# database schema name
@@ -26,6 +27,7 @@ sites['site_med_prd'] = {
 	'backup_root': "/var/backups/nightly",
 	'web_root': "/var/www",
 	'directory': "med.ucf.edu/production",
+	'directory_specialized': "med.ucf.edu/tertiary-production",
 	'user': "DB_USER",
 	'password': "DB_PASSWORD",
 	'db': "DB",
@@ -37,6 +39,7 @@ sites['site_med_dev'] = {
 	'backup_root': "/var/backups/nightly",
 	'web_root': "/var/www",
 	'directory': "med.ucf.edu/dev",
+	'directory_specialized': "med.ucf.edu/tertiary-dev",
 	'user': "DB_DEV_USER",
 	'password': "DB_DEV_PASSWORD",
 	'db': "DB_DEV",

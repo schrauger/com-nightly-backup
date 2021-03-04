@@ -35,9 +35,16 @@ def run_backup(site):
 	web_root = site['web_root']
 	nightly_root = backup_root + '/' + site['directory']
 	nightly_dir = nightly_root + '/' + current_time
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/unprotected/web"')
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/unprotected/db"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/web"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir + '/db"')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir + '" "' + nightly_root + '/latest"')
+
+	# create same setup of folders, but specifically for the tertiary server. this server will pull in all files, but have a couple files specialized for their setup.
+	nightly_root_specialized = backup_root + '/' + site['directory_specialized']
+	nightly_dir_specialized = nightly_root_specialized + '/' + current_time
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir_specialized + '/web"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir_specialized + '/db"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '" "' + nightly_root_specialized + '/latest"')
 
 	### Chmod. Only root can read or write. However, the execute bit is set to others can traverse the path if they know the location.
 	### This is used by the user_read_access user with ACL read access for all backups.
@@ -49,39 +56,59 @@ def run_backup(site):
 	except KeyError:
 		print "No user configured for read access. Continuing with backup."
 
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'chmod -R 0711 "' + nightly_dir_specialized + '"')
+	try:
+		site['user_read_access']
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -m user:' + site['user_read_access'] + ':rX ' + nightly_dir_specialized) # set permission for folder
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -d -m user:' + site['user_read_access'] + ':rX ' + nightly_dir_specialized) # set default for new files and subfolders
+	except KeyError:
+		print "No user configured for read access. Continuing with backup."
+
 	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
 	###   This will save tons on filespace for files that are unchanged, but changed, added, removed files
 	###   are backed up. And if an old backup gets deleted, the hardlinked duplicates aren't deleted.
 	# Get most recent directory path: find DIR -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -zk 1nr | head -1 | awk '{ print $2 }'
 	previous_nightly_dir = os.popen('sudo -u ' + site['linux_user'] + ' ' + 'find "' + nightly_root + '/" -mindepth 1 -maxdepth 1 -type d -not -path "' + nightly_dir + '" -printf "%T@ %p\n" | sort -nr | head -1 | awk \'{ print $2 }\'').read().strip()
 	if (previous_nightly_dir):
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/unprotected/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/unprotected/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
 	else:
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/unprotected/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
 
+	# Copy with hardlinks the regular backup files to the specialized backup folder, excluding wp-config.php
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir_specialized + '/web/"')
+
+	### @TODO this is no longer needed or helpful. just chown all the files that give us trouble, and overwrite the wp-config.php file
 	### Move protected files into their own folder. Mainly because the COMIT script crashes if it tries to read these files (it can't skip files that it sees but lacks permission to read)
 	for protected_file in site['protected_files']:
 		# if the file actually exists, move it outside the web folder
-		if os.path.isfile(nightly_dir + '/unprotected/web/' + protected_file):
+		if os.path.isfile(nightly_dir + '/web/' + protected_file):
 			# get the relative path of the file based on the string
 			protected_path = os.path.dirname(protected_file)
 			protected_filename = os.path.basename(protected_file)
-			protected_path_full_origin = nightly_dir + '/unprotected/web/' + protected_path + '/'
-			protected_path_full_destination = nightly_dir + '/protected/' + protected_path + '/'
+			protected_path_full_origin = nightly_dir_specialized + '/unprotected/web/' + protected_path + '/'
+			protected_path_full_destination = nightly_dir_specialized + '/protected/' + protected_path + '/'
 			#print(protected_path_full_origin + protected_file)
 			#print(protected_path_full_destination + protected_file)
 			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + protected_path_full_destination + '"')
 			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mv -f "' + protected_path_full_origin + protected_filename + '" "' + protected_path_full_destination + protected_filename + '"')
 
-	### Backup COM Production database
+	### Overwrite any files in the specialized backup folder using the specialized source directory
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a " + web_root + '/' + site['directory_specialized'] + '/" "' + nightly_dir_specialized + '/web/"')
+
+	### Backup Production database
 	# make sure there is no space between -p and the double quote
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + nightly_dir + '/unprotected/db/' + site['db'] + '.sql"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + nightly_dir + '/db/' + site['db'] + '.sql"')
+
+	### Link the database dump into the specialized folder so that user can access it as well
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln "' + nightly_dir + '/db/' + site['db'] + '.sql" "' + nightly_dir_specialized + '/db/' + site['db'] + '.sql"')
 
 	### Delete old backups
 	if (site['backup_days']):
 		prune(nightly_root, site['backup_days'])
+		prune(nightly_root_specialized, site['backup_days'])
 	else:
 		prune(nightly_root, 90)
+		prune(nightly_root_specialized, 90)
 
 def prune(site_nightly_root, days, linux_user = "root"):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
