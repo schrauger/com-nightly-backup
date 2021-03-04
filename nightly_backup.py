@@ -75,22 +75,23 @@ def run_backup(site):
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
 
 	# Copy with hardlinks the regular backup files to the specialized backup folder, excluding wp-config.php
+	print('copying again for tertiary')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir_specialized + '/web/"')
 
 	### @TODO this is no longer needed or helpful. just chown all the files that give us trouble, and overwrite the wp-config.php file
 	### Move protected files into their own folder. Mainly because the COMIT script crashes if it tries to read these files (it can't skip files that it sees but lacks permission to read)
-	for protected_file in site['protected_files']:
-		# if the file actually exists, move it outside the web folder
-		if os.path.isfile(nightly_dir + '/web/' + protected_file):
-			# get the relative path of the file based on the string
-			protected_path = os.path.dirname(protected_file)
-			protected_filename = os.path.basename(protected_file)
-			protected_path_full_origin = nightly_dir_specialized + '/unprotected/web/' + protected_path + '/'
-			protected_path_full_destination = nightly_dir_specialized + '/protected/' + protected_path + '/'
-			#print(protected_path_full_origin + protected_file)
-			#print(protected_path_full_destination + protected_file)
-			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + protected_path_full_destination + '"')
-			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mv -f "' + protected_path_full_origin + protected_filename + '" "' + protected_path_full_destination + protected_filename + '"')
+#	for protected_file in site['protected_files']:
+#		# if the file actually exists, move it outside the web folder
+#		if os.path.isfile(nightly_dir + '/web/' + protected_file):
+#			# get the relative path of the file based on the string
+#			protected_path = os.path.dirname(protected_file)
+#			protected_filename = os.path.basename(protected_file)
+#			protected_path_full_origin = nightly_dir_specialized + '/unprotected/web/' + protected_path + '/'
+#			protected_path_full_destination = nightly_dir_specialized + '/protected/' + protected_path + '/'
+#			#print(protected_path_full_origin + protected_file)
+#			#print(protected_path_full_destination + protected_file)
+#			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + protected_path_full_destination + '"')
+#			os.system('sudo -u ' + site['linux_user'] + ' ' + 'mv -f "' + protected_path_full_origin + protected_filename + '" "' + protected_path_full_destination + protected_filename + '"')
 
 	### Overwrite any files in the specialized backup folder using the specialized source directory
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a "' + web_root + '/' + site['directory_specialized'] + '/" "' + nightly_dir_specialized + '/web/"')
