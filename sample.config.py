@@ -13,6 +13,7 @@ sites = {}
 						# (this portion of the path is not recreated)
 #	'directory': "med.ucf.edu/production",	# the directory to be backed up
 #	'directory_specialized': "med.ucf.edu/tertiary-production", # files that are used in place of the main files, when used on the tertiary server (generally, alternative wp-config.php files)
+#						# NOTE: files in here should be owned by the linux_user, readable by it. wp-config.php is usually owned by root to prevent accidental viewing, but this has to be viewable by user defined.
 #	'user': "DB_USER",			# database username that has SELECT privileges
 #	'password': "DB_PASSWORD",		# database password
 #	'db': "DB",				# database schema name
