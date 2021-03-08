@@ -48,8 +48,8 @@ def run_backup(site):
 
 	#symlink the web and db folder for backwards compatibility
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_root + '/latest/unprotected"')
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '/web/' + '" "' + nightly_root + '/latest/unprotected/web/"')
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '/db/' + '" "' + nightly_root + '/latest/unprotected/db/"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '/web/' + '" "' + nightly_root + '/latest/unprotected/web"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '/db/' + '" "' + nightly_root + '/latest/unprotected/db"')
 
 
 	### Chmod. Only root can read or write. However, the execute bit is set to others can traverse the path if they know the location.
