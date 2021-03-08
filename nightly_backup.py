@@ -46,6 +46,12 @@ def run_backup(site):
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_dir_specialized + '/db"')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '" "' + nightly_root_specialized + '/latest"')
 
+	#symlink the web and db folder for backwards compatibility
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mkdir -p "' + nightly_root + '/latest/unprotected"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '/web/' + '" "' + nightly_root + '/latest/unprotected/web/"')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'ln -sfn "' + nightly_dir_specialized + '/db/' + '" "' + nightly_root + '/latest/unprotected/db/"')
+
+
 	### Chmod. Only root can read or write. However, the execute bit is set to others can traverse the path if they know the location.
 	### This is used by the user_read_access user with ACL read access for all backups.
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'chmod -R 0711 "' + nightly_dir + '"')
@@ -54,7 +60,7 @@ def run_backup(site):
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -m user:' + site['user_read_access'] + ':rX ' + nightly_dir) # set permission for folder
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -d -m user:' + site['user_read_access'] + ':rX ' + nightly_dir) # set default for new files and subfolders
 	except KeyError:
-		print "No user configured for read access. Continuing with backup."
+		print("No user configured for read access. Continuing with backup.")
 
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'chmod -R 0711 "' + nightly_dir_specialized + '"')
 	try:
@@ -62,7 +68,7 @@ def run_backup(site):
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -m user:' + site['user_read_access'] + ':rX ' + nightly_dir_specialized) # set permission for folder
 		os.system('sudo -u ' + site['linux_user'] + ' ' + 'setfacl -R -d -m user:' + site['user_read_access'] + ':rX ' + nightly_dir_specialized) # set default for new files and subfolders
 	except KeyError:
-		print "No user configured for read access. Continuing with backup."
+		print("No user configured for read access. Continuing with backup.")
 
 	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
 	###   This will save tons on filespace for files that are unchanged, but changed, added, removed files
@@ -143,6 +149,6 @@ Subject: %s
 	p.write(message)
 	status = p.close()
 	if status:
-		print "Sendmail exit status", status
+		print("Sendmail exit status", status)
 
 main() # run the script
