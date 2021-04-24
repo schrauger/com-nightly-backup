@@ -76,9 +76,9 @@ def run_backup(site):
 	# Get most recent directory path: find DIR -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -zk 1nr | head -1 | awk '{ print $2 }'
 	previous_nightly_dir = os.popen('sudo -u ' + site['linux_user'] + ' ' + 'find "' + nightly_root + '/" -mindepth 1 -maxdepth 1 -type d -not -path "' + nightly_dir + '" -printf "%T@ %p\n" | sort -nr | head -1 | awk \'{ print $2 }\'').read().strip()
 	if (previous_nightly_dir):
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + previous_nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir + '/web/" --exclude=*.sync-conflict*')
 	else:
-		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/"')
+		os.system('sudo -u ' + site['linux_user'] + ' ' + 'cp -a "' + web_root + '/' + site['directory'] + '/." "' + nightly_dir + '/web/" --exclude=*.sync-conflict*')
 
 	# Copy with hardlinks the regular backup files to the specialized backup folder
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a --delete --link-dest="' + nightly_dir + '/web" "' + web_root + '/' + site['directory'] + '/" "' + nightly_dir_specialized + '/web/"')
