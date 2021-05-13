@@ -76,7 +76,7 @@ def run_backup(site):
 
 
 	### Overwrite any files in the specialized backup folder using the specialized source directory
-	print('overwriting specialized files')
+#	print('overwriting specialized files')
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'rsync -a "' + web_root + '/' + site['directory_specialized'] + '/" "' + nightly_dir_specialized + '/web/"')
 
 	### Backup Production database
