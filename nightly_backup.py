@@ -53,7 +53,7 @@ def run_backup(site):
 	### Copy with hardlinks the most recent backup to a new folder, then sync the latest with the new folder.
 	###   This will save tons on filespace for files that are unchanged, but changed, added, removed files
 	###   are backed up. And if an old backup gets deleted, the hardlinked duplicates aren't deleted.
-	excluded_files=' --exclude=*.sync-conflict* --exclude=sb.log --exclude=page-caching-log.php '
+	excluded_files=' --exclude=*.sync-conflict* --exclude=sb.log --exclude=page-caching-log.php --exclude=wphb-cache --exclude=wp-content/cache/ '
 
 	# Get most recent directory path: find DIR -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -zk 1nr | head -1 | awk '{ print $2 }'
 #	print('find "' + nightly_root + '/" -mindepth 1 -maxdepth 1 -type d -not -path "' + nightly_dir + '" -printf "%T@ %p\n" | sort -nr | head -1 | awk \'{ print $2 }\'')
