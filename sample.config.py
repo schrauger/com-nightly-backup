@@ -9,6 +9,7 @@ sites = {}
 #sites['site_med_prd'] = {
 #	'linux_user': "root",			# user that can read the source and write to the destination
 #	'backup_root': "/var/backups/nightly",	# backup destination root directory
+#	'backup_root_db_incremental': "/var/backups/db-incremental", # backup destination root directory, for incremental database script
 #	'web_root': "/var/www",			# web root that contains the 'directory'
 						# (this portion of the path is not recreated)
 #	'directory': "med.ucf.edu/production",	# the directory to be backed up
@@ -26,6 +27,7 @@ sites = {}
 sites['site_med_prd'] = {
 	'linux_user': "root",
 	'backup_root': "/var/backups/nightly",
+	'backup_root_db_incremental': "/var/backups/db-incremental",
 	'web_root': "/var/www",
 	'directory': "med.ucf.edu/production",
 	'directory_specialized': "med.ucf.edu/tertiary-production",
@@ -38,6 +40,7 @@ sites['site_med_prd'] = {
 sites['site_med_dev'] = {
 	'linux_user': "root",
 	'backup_root': "/var/backups/nightly",
+	'backup_root_db_incremental': "/var/backups/db-incremental",
 	'web_root': "/var/www",
 	'directory': "med.ucf.edu/dev",
 	'directory_specialized': "med.ucf.edu/tertiary-dev",
