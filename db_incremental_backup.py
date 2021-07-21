@@ -65,4 +65,8 @@ def run_db_incremental_backup(site):
 #	os.system('sudo -u ' + linux_user + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
 	# pipe into xargs because it is more efficient than using the find -exec command to rm
 
+def get_date_time():
+    date = datetime.datetime.today()
+    return date.strftime("%Y-%m-%d_%s")
+
 main() # run the script
