@@ -59,7 +59,7 @@ def run_db_incremental_backup(site):
 #		prune(site_root_db_incremental, 90)
 #		prune(site_root_db_incremental_specialized, 90)
 
-def prune(site_nightly_root, days, linux_user = "root"):
+#def prune(site_nightly_root, days, linux_user = "root"):
 	### Delete backup folders older than 90 days. Maxdepth - only look at the top folder structure. Mindepth - don't include the relative root (which is at depth 0) (which would delete all backups!).
 	### mtime is number of days from today since the files were modified.
 #	os.system('sudo -u ' + linux_user + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
