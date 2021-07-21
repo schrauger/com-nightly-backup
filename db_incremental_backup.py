@@ -38,16 +38,16 @@ def run_db_incremental_backup(site):
 	os.system('sudo -u ' + site['linux_user'] + ' ' + 'mysqldump -u ' + site['user'] + " -p'" + site['password'] + "' " + site['db'] + ' > "' + site_root_db_incremental + '/' + site['db'] + '.sql"')
 
 	### Initialize the git repo if not already
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git --work-tree "' + site_root_db_incremental + '" init')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git -C "' + site_root_db_incremental + '" init')
 
 	### Add the file to the repo if not already
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git --work-tree "' + site_root_db_incremental + '" add .')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git -C "' + site_root_db_incremental + '" add .')
 
 	### Commit the production database to the git repo
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git --work-tree "' + site_root_db_incremental + '" commit -m "' + get_date_time() + ' db backup" ')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git -C "' + site_root_db_incremental + '" commit -m "' + get_date_time() + ' db backup" ')
 
 	### Re-pack the git repo - ie compress to only store deltas (git does this automatically when it deems it necessary; we tell it to do it each time)
-	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git --work-tree "' + site_root_db_incremental + '" add .')
+	os.system('sudo -u ' + site['linux_user'] + ' ' + 'git -C "' + site_root_db_incremental + '" add .')
 
 
 
