@@ -65,32 +65,4 @@ def run_db_incremental_backup(site):
 #	os.system('sudo -u ' + linux_user + ' ' + 'find "' + site_nightly_root + '" -mindepth 1 -maxdepth 1 -type d -mtime +' + days + ' | xargs rm -rf')
 	# pipe into xargs because it is more efficient than using the find -exec command to rm
 
-def get_date_time():
-    date = datetime.datetime.today()
-    return date.strftime("%Y-%m-%d_%s")
-
-# send log email saying backups were completed
-def send_email():
-	SENDMAIL = config.sendmail
-	FROM = config.email_from
-	TO = config.email_to
-
-	SUBJECT = "Nightly Backup - " + config.server
-	TEXT = "The nightly backup for " + get_date_time() + " on " + config.server + """ completed. \n\n\
-Date: """ + get_date_time() + """\n\
-Server: """ + config.server
-
-	message = """\
-From: %s
-To: %s
-Subject: %s
-
-%s
-	""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
-	p = os.popen("%s -t -i" %SENDMAIL, "w")
-	p.write(message)
-	status = p.close()
-	if status:
-		print("Sendmail exit status", status)
-
 main() # run the script
