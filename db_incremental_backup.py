@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+# This script is an attempt to reduce file storage regarding database dumps.
+# Since the db dump changes for every backup, hardlinking duplicate files
+# won't help us.
+# Instead, the idea here is to use Git to track the changes in the db dump file.
+# Since mysql dumps are simply lines of text, hopefully only a handful of lines
+# actually change between each dump. Git is capable of storing only the delta
+# changes to files, so this could save us a lot on disk space where
+# hardlinking is innefective.
+
 import os
 import datetime
 import sys
